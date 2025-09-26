@@ -25,13 +25,21 @@
             -moz-appearance: textfield;
         }
         /* Animación para el efecto de carga del subtotal y ganancia */
-        @keyframes neon-flash {
+        @keyframes neon-flash-pink {
             0% { color: #fff; }
-            50% { color: #ff1493; } /* Rosa neón */
+            50% { color: #fc3dff; } /* Rosa neón Correcto */
             100% { color: #fff; }
         }
-        .animate-neon-flash {
-            animation: neon-flash 0.5s ease-in-out;
+        @keyframes neon-flash-green {
+            0% { color: #fff; }
+            50% { color: #c3ff3d; } /* Verde neón */
+            100% { color: #fff; }
+        }
+        .animate-neon-flash-pink {
+            animation: neon-flash-pink 0.5s ease-in-out;
+        }
+        .animate-neon-flash-green {
+            animation: neon-flash-green 0.5s ease-in-out;
         }
         /* Animación para el spinner de carga de la pestaña */
         @keyframes spin {
@@ -1294,4 +1302,5 @@
     </script>
 </body>
 </html>
+
 
