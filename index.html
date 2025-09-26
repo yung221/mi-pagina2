@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Productos</title>
+    <title>Panadería MDJ</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <!-- Add Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
         body {
@@ -37,8 +41,10 @@
         .animate-spin-custom {
             animation: spin 1s linear infinite;
         }
+
+        /* ESTILOS DEL MODAL CORREGIDOS */
         .modal {
-            display: none; /* Oculto por defecto */
+            display: none; 
             position: fixed;
             z-index: 100;
             left: 0;
@@ -46,48 +52,62 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(3px);
+            /* Asegura el centrado */
             justify-content: center;
             align-items: center;
         }
-        .modal-content {
-            background-color: #1a1a1a;
-            padding: 2.5rem;
-            border-radius: 25px;
-            box-shadow: 0 0 20px #ff1493;
-            text-align: center;
+        .modal-container {
+            /* Limita el ancho del contenedor en desktop pero permite usar 100% de su ancho interno */
+            width: 100%; 
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
         }
-        .neon-pink {
-            color: #ff1493;
+        .modal-content {
+            background-color: #000000;
+            padding: 2.5rem 1rem;
+            width: 90%; /* Ancho predeterminado para dejar margen en desktop */
+            max-width: 500px;
+            
+            /* ESTILO SOLICITADO: BORDES RECTOS SIN ESQUINAS REDONDEADAS */
+            border: 1px solid #FFFFFF; /* Borde base para color */
+            border-left: none; 
+            border-right: none; 
+            border-radius: 0; /* Asegura que no haya redondeo */
+            
+            text-align: center;
+            position: relative;
         }
         
-        /*
-        * MEDIA QUERY PARA TELÉFONOS
-        * Oculta columnas de Precio y Ganancia para ahorrar espacio.
-        * Cambia el diseño de la cuadrícula para acomodar 3 columnas.
-        */
+        /* En móvil, se expande a 100% de ancho sin límite de max-width */
         @media (max-width: 767px) {
+             .modal-content {
+                width: 100%; 
+                max-width: none;
+                padding: 2.5rem 0.5rem;
+             }
+             /* Otros ajustes de layout móvil */
             .grid-cols-5.responsive-grid {
                 grid-template-columns: 1fr 1fr 1fr;
             }
             .precio-col, .ganancia-col {
                 display: none;
             }
-            /* Cuando solo se muestra el precio */
             .show-precio .responsive-grid {
                 grid-template-columns: 1fr 1fr 1fr 1fr;
             }
             .show-precio .precio-col {
                 display: block;
             }
-            /* Cuando solo se muestra la ganancia */
             .show-ganancia .responsive-grid {
                 grid-template-columns: 1fr 1fr 1fr 1fr;
             }
             .show-ganancia .ganancia-col {
                 display: block;
             }
-            /* Cuando se muestran ambos */
             .show-precio.show-ganancia .responsive-grid {
                 grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
             }
@@ -96,6 +116,24 @@
                 display: block;
             }
         }
+        /* COLORES NEÓN */
+        .neon-pink {
+            color: #fc3dff; /* Rosa neón Correcto */
+        }
+        .neon-green {
+            color: #c3ff3d;
+        }
+        
+        /* Botón de cerrar - color celeste simple */
+        .simple-blue-btn {
+            background-color: #00bcd4; 
+            color: #000000;
+            font-weight: bold;
+        }
+        .simple-blue-btn:hover {
+            background-color: #0099ab;
+        }
+
     </style>
 </head>
 <body class="flex flex-col items-center justify-start min-h-screen">
@@ -103,8 +141,8 @@
     <div class="bg-black text-white w-full h-full px-4 md:px-8">
         <!-- Encabezado -->
         <div class="pt-8">
-            <h1 class="text-3xl font-bold mb-6 text-center">Lista de Productos</h1>
-            
+            <h1 class="text-3xl font-bold mb-6 text-center">Panadería MDJ</h1>
+
             <!-- Botón Generar resumen -->
             <div class="flex justify-center mb-6">
                 <button id="btn-resumen" class="px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 active:bg-gray-600">
@@ -590,43 +628,387 @@
                 </div>
             </div>
         </div>
+
+        <!-- Botón del historial -->
+        <div class="flex justify-center mt-6">
+            <button id="btn-historial" class="px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 active:bg-gray-600">
+                Historial
+            </button>
+        </div>
+
+        <!-- Vista de años (nueva, inicialmente oculta) -->
+        <div id="year-view" class="hidden p-0 mt-6">
+            <h2 class="text-2xl font-bold mb-4 text-center">Ganancias anuales</h2>
+            <div class="flex flex-col gap-2" id="year-list">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer year-item" data-year="2025">
+                    <span class="font-medium">2025</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer year-item" data-year="2026">
+                    <span class="font-medium">2026</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer year-item" data-year="2027">
+                    <span class="font-medium">2027</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer year-item" data-year="2028">
+                    <span class="font-medium">2028</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+            </div>
+            <button id="back-from-years-btn" class="hidden mt-4 px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">Volver</button>
+        </div>
+
+        <!-- Vista del historial (inicialmente oculta) -->
+        <div id="historial-view" class="hidden p-0 mt-6">
+            <h2 id="monthly-title" class="text-2xl font-bold mb-4 text-center"></h2>
+            <div class="flex flex-col gap-2" id="monthly-list">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Enero" data-month-index="0">
+                    <span class="font-medium">Enero</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Febrero" data-month-index="1">
+                    <span class="font-medium">Febrero</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Marzo" data-month-index="2">
+                    <span class="font-medium">Marzo</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Abril" data-month-index="3">
+                    <span class="font-medium">Abril</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Mayo" data-month-index="4">
+                    <span class="font-medium">Mayo</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Junio" data-month-index="5">
+                    <span class="font-medium">Junio</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Julio" data-month-index="6">
+                    <span class="font-medium">Julio</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Agosto" data-month-index="7">
+                    <span class="font-medium">Agosto</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Septiembre" data-month-index="8">
+                    <span class="font-medium">Septiembre</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Octubre" data-month-index="9">
+                    <span class="font-medium">Octubre</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Noviembre" data-month-index="10">
+                    <span class="font-medium">Noviembre</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Diciembre" data-month-index="11">
+                    <span class="font-medium">Diciembre</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+            </div>
+            <button id="back-to-years-btn" class="mt-4 px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">Volver</button>
+        </div>
+        
+        <!-- Vista de la semana (inicialmente oculta) -->
+        <div id="weekly-view" class="hidden p-0 mt-6">
+            <h2 id="weekly-title" class="text-2xl font-bold mb-4 text-center"></h2>
+            <div class="flex flex-col gap-2" id="weekly-list">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item" data-week="1">
+                    <span class="font-medium">Semana 1</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item" data-week="2">
+                    <span class="font-medium">Semana 2</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item" data-week="3">
+                    <span class="font-medium">Semana 3</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item" data-week="4">
+                    <span class="font-medium">Semana 4</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item" data-week="5">
+                    <span class="font-medium">Semana 5</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                </div>
+            </div>
+            <button id="back-to-months-btn" class="mt-4 px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">Volver</button>
+        </div>
+
+        <!-- Vista de los días (nueva, inicialmente oculta) -->
+        <div id="day-view" class="hidden p-0 mt-6">
+            <h2 id="day-title" class="text-2xl font-bold mb-4 text-center"></h2>
+            <div class="flex flex-col gap-2" id="day-list">
+                <!-- Los días se generarán dinámicamente aquí -->
+            </div>
+            <button id="back-to-weeks-btn" class="mt-4 px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">Volver</button>
+        </div>
+
     </div>
 
     <!-- Modal para el resumen -->
     <div id="resumen-modal" class="modal">
-        <div class="modal-content text-white">
-            <h2 class="text-2xl font-bold mb-4">Resumen de ventas</h2>
-            
-            <!-- Contenedor del spinner -->
-            <div id="modal-spinner" class="flex justify-center items-center h-24">
-                <div class="w-10 h-10 border-4 border-t-4 border-gray-200 border-solid rounded-full animate-spin-custom" style="border-top-color: #ff1493;"></div>
-            </div>
+        <!-- El modal-container maneja el centrado y el ancho máximo en desktop -->
+        <div class="modal-container"> 
+            <!-- Se utiliza modal-content con el borde recto y sin redondeo -->
+            <div class="modal-content text-white flex flex-col items-center">
+                <h2 class="text-2xl font-bold mb-8">Resumen del día</h2>
 
-            <!-- Contenedor del resumen (inicialmente oculto) -->
-            <div id="resumen-data" class="hidden">
-                <div class="flex flex-col gap-2">
-                    <div class="flex justify-between items-center py-2 border-b border-gray-600">
-                        <span class="font-bold text-lg">Pago de hoy:</span>
-                        <span id="pago-total" class="font-bold text-xl neon-pink">Q0</span>
-                    </div>
-                    <div class="flex justify-between items-center py-2 border-b border-gray-600">
-                        <span class="font-bold text-lg">Ganancia de hoy:</span>
-                        <span id="ganancia-total" class="font-bold text-xl neon-pink">Q0</span>
+                <!-- Contenedor del spinner -->
+                <div id="modal-spinner" class="flex justify-center items-center h-24">
+                    <div class="w-10 h-10 border-4 border-t-4 border-gray-200 border-solid rounded-full animate-spin-custom" style="border-top-color: #ff1493;"></div>
+                </div>
+
+                <!-- Contenedor del resumen (inicialmente oculto) -->
+                <div id="resumen-data" class="hidden w-full max-w-xs">
+                    <div class="flex flex-col gap-6 items-center w-full px-4">
+                        <div class="flex flex-col items-center w-full">
+                            <span class="font-bold text-sm text-gray-400">Pago de hoy</span>
+                            <span id="pago-total" class="font-bold text-4xl neon-pink mt-1">Q0</span>
+                        </div>
+                        <div class="flex flex-col items-center w-full">
+                            <span class="font-bold text-sm text-gray-400">Ganancia de hoy</span>
+                            <span id="ganancia-total" class="font-bold text-4xl neon-green mt-1">Q0</span>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <button id="close-modal" class="mt-8 px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">Cerrar</button>
+             <!-- Botón de Cerrar (FUERA DEL RECUADRO) -->
+            <button id="close-modal" class="mt-8 px-8 py-3 rounded-full simple-blue-btn transition duration-300">Cerrar</button>
         </div>
     </div>
-
+    
     <script>
+
+            // --- INICIO: Configuración e inicialización de Firebase ---
+            const firebaseConfig = {
+                apiKey: "AIzaSyC_Mduafww-kwV7yIFEvcoEE9GnYjBH4Gc",
+                authDomain: "visualprueba2.firebaseapp.com",
+                projectId: "visualprueba2",
+                storageBucket: "visualprueba2.firebasestorage.app",
+                messagingSenderId: "637609680539",
+                appId: "1:637609680539:web:b27485e3d28f666944303e",
+                measurementId: "G-GKJYL45Z2M"
+            };
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.firestore();
+            // --- FIN: Configuración e inicialización de Firebase ---
+
+            // Función para obtener el nombre de la vista (manana/tarde)
+            function getViewName(viewElement) {
+                if (viewElement.id === 'manana-view') return 'manana';
+                if (viewElement.id === 'tarde-view') return 'tarde';
+                return 'otros';
+            }
+
+            // Función para guardar cantidades de productos en Firestore
+            async function saveProductQuantities(viewElement) {
+                const viewName = getViewName(viewElement);
+                const rows = viewElement.querySelectorAll('.product-row');
+                const data = {};
+                rows.forEach((row, idx) => {
+                    const input = row.querySelector('.cantidad-input');
+                    if (input && input.value !== "") {
+                        data[idx] = Number(input.value);
+                    } // Si está vacío, no se guarda nada para ese índice
+                });
+                try {
+                    await db.collection('ventas').doc(viewName).set(data);
+                } catch (e) {
+                    console.error('Error guardando cantidades en Firestore:', e);
+                }
+            }
+
+            // Función para cargar cantidades de productos desde Firestore
+            async function loadProductQuantities(viewElement) {
+                const viewName = getViewName(viewElement);
+                try {
+                    const doc = await db.collection('ventas').doc(viewName).get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const rows = viewElement.querySelectorAll('.product-row');
+                        rows.forEach((row, idx) => {
+                            const input = row.querySelector('.cantidad-input');
+                            if (input) {
+                                if (data[idx] === undefined || data[idx] === null || data[idx] === "") {
+                                    input.value = "";
+                                } else {
+                                    input.value = data[idx];
+                                }
+                                // Disparar evento input para actualizar subtotales
+                                input.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error('Error cargando cantidades de Firestore:', e);
+                }
+            }
+        
         document.addEventListener('DOMContentLoaded', () => {
+            // --- INICIO: Mostrar historial desde Firestore ---
+            // Cargar totales de años
+            async function loadYearTotals() {
+                const yearList = document.getElementById('year-list');
+                const yearItems = yearList.querySelectorAll('.year-item');
+                for (const item of yearItems) {
+                    const year = item.dataset.year;
+                    let total = 0;
+                    // Sumar los totales de todos los meses del año
+                    const mesesSnap = await db.collection('historial').doc(year).collection('meses').get();
+                    if (mesesSnap.size > 0) {
+                        for (const mesDoc of mesesSnap.docs) {
+                            const data = mesDoc.data();
+                            if (data && data.totalGanancia) total += data.totalGanancia;
+                        }
+                    } else {
+                        // Fallback: sumar todas las ganancias de todos los días del año si no hay documentos de mes
+                        for (let m = 1; m <= 12; m++) {
+                            for (let w = 1; w <= 5; w++) {
+                                const diasSnap = await db.collection('historial').doc(year).collection(`${m}`).doc(`sem${w}`).collection('dias').get();
+                                for (const diaDoc of diasSnap.docs) {
+                                    const data = diaDoc.data();
+                                    if (data && data.totalGanancia) total += data.totalGanancia;
+                                }
+                            }
+                        }
+                    }
+                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+                }
+            }
+
+            // Cargar totales de meses para un año
+            async function loadMonthTotals(year) {
+                const monthlyList = document.getElementById('monthly-list');
+                const monthItems = monthlyList.querySelectorAll('.month-item');
+                for (const item of monthItems) {
+                    const month = item.dataset.monthIndex ? (parseInt(item.dataset.monthIndex) + 1) : 1;
+                    let total = 0;
+                    // Sumar todas las ganancias de todos los días del mes
+                    for (let w = 1; w <= 5; w++) {
+                        const diasSnap = await db.collection('historial').doc(year).collection(`${month}`).doc(`sem${w}`).collection('dias').get();
+                        for (const diaDoc of diasSnap.docs) {
+                            const data = diaDoc.data();
+                            if (data && data.totalGanancia) total += data.totalGanancia;
+                        }
+                    }
+                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+                }
+            }
+
+            // Cargar totales de semanas para un mes
+            async function loadWeekTotals(year, month) {
+                const weeklyList = document.getElementById('weekly-list');
+                const weekItems = weeklyList.querySelectorAll('.week-item');
+                for (const item of weekItems) {
+                    const week = item.dataset.week;
+                    let total = 0;
+                    // Sumar todas las ganancias de los días de la semana
+                    const diasSnap = await db.collection('historial').doc(year).collection(`${month}`).doc(`sem${week}`).collection('dias').get();
+                    for (const diaDoc of diasSnap.docs) {
+                        const data = diaDoc.data();
+                        if (data && data.totalGanancia) total += data.totalGanancia;
+                    }
+                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+                }
+            }
+
+            // Cargar totales de días para una semana
+            async function loadDayTotals(year, month, week) {
+                const dayList = document.getElementById('day-list');
+                const dayItems = dayList.querySelectorAll('.day-item');
+                for (const item of dayItems) {
+                    const dayText = item.querySelector('span.font-medium').textContent;
+                    // Extraer el número de día del texto (ej: "Lunes 25")
+                    const match = dayText.match(/\b(\d{1,2})\b$/);
+                    if (!match) continue;
+                    const day = match[1];
+                    const dayId = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                    const doc = await db.collection('historial').doc(year).collection(`${month}`).doc(`sem${week}`).collection('dias').doc(dayId).get();
+                    let total = 0;
+                    if (doc.exists && doc.data().totalGanancia) {
+                        total = doc.data().totalGanancia;
+                    }
+                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+                }
+            }
+
+            // Llamar al cargar la página
+            loadYearTotals();
+            // --- FIN: Mostrar historial desde Firestore ---
+            // --- INICIO: Guardado automático de resumen diario ---
+            async function saveDailySummaryIfNeeded() {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = now.getMonth() + 1; // 1-12
+                const day = now.getDate();
+                const hour = now.getHours();
+                const minute = now.getMinutes();
+                // Calcular semana del mes (1-5)
+                const week = Math.ceil(day / 7);
+                // Solo guardar si es después de las 16:48
+                if (hour < 16 || (hour === 16 && minute < 48)) return;
+                // ID de documento para el día
+                const dayId = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                // Referencia a Firestore
+                const resumenRef = db.collection('historial').doc(`${year}`).collection(`${month}`).doc(`sem${week}`).collection('dias').doc(dayId);
+                // Verificar si ya existe
+                const doc = await resumenRef.get();
+                if (doc.exists) return; // Ya guardado
+                // Forzar recarga de datos desde Firestore antes de calcular totales
+                await loadProductQuantities(document.getElementById('manana-view'));
+                await loadProductQuantities(document.getElementById('tarde-view'));
+                // Esperar un pequeño tiempo para que el DOM se actualice
+                await new Promise(res => setTimeout(res, 300));
+                function getTotalGananciaFromView(viewElement) {
+                    const totalGananciaSpan = viewElement.querySelector('.total-ganancia');
+                    if (!totalGananciaSpan) return 0;
+                    // Extraer número de texto tipo "Q123.45"
+                    const match = totalGananciaSpan.textContent.match(/Q([\d.,]+)/);
+                    if (match) {
+                        // Reemplazar coma por nada y punto por punto decimal
+                        return parseFloat(match[1].replace(/,/g, '')) || 0;
+                    }
+                    return 0;
+                }
+                const mananaGanancia = getTotalGananciaFromView(document.getElementById('manana-view'));
+                const tardeGanancia = getTotalGananciaFromView(document.getElementById('tarde-view'));
+                const totalGanancia = mananaGanancia + tardeGanancia;
+                // Guardar solo la ganancia en Firestore
+                await resumenRef.set({
+                    year,
+                    month,
+                    week,
+                    day,
+                    totalGanancia,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+            // Llamar al cargar la página
+            saveDailySummaryIfNeeded();
+            // --- FIN: Guardado automático de resumen diario ---
             const btnManana = document.getElementById('btn-manana');
+            // Cargar cantidades desde Firestore al cargar la página
+            loadProductQuantities(document.getElementById('manana-view'));
+            loadProductQuantities(document.getElementById('tarde-view'));
             const btnTarde = document.getElementById('btn-tarde');
             const btnResumen = document.getElementById('btn-resumen');
+            const btnHistorial = document.getElementById('btn-historial');
             const mananaView = document.getElementById('manana-view');
             const tardeView = document.getElementById('tarde-view');
+            const yearView = document.getElementById('year-view');
+            const historialView = document.getElementById('historial-view');
+            const weeklyView = document.getElementById('weekly-view');
+            const dayView = document.getElementById('day-view');
             const loadingSpinner = document.getElementById('loading-spinner');
             const mainContainer = document.querySelector('.bg-black');
             const resumenModal = document.getElementById('resumen-modal');
@@ -639,6 +1021,23 @@
             
             const togglePrecioBtn = document.getElementById('toggle-precio-btn');
             const toggleGananciaBtn = document.getElementById('toggle-ganancia-btn');
+            const yearList = document.getElementById('year-list');
+            const monthlyTitle = document.getElementById('monthly-title');
+            const monthlyList = document.getElementById('monthly-list');
+            const weeklyList = document.getElementById('weekly-list');
+            const dayList = document.getElementById('day-list');
+            const weeklyTitle = document.getElementById('weekly-title');
+            const dayTitle = document.getElementById('day-title');
+            const backToYearsBtn = document.getElementById('back-to-years-btn');
+            const backToMonthsBtn = document.getElementById('back-to-months-btn');
+            const backToWeeksBtn = document.getElementById('back-to-weeks-btn');
+
+            let currentYear = 0;
+            let currentMonthName = '';
+            let currentMonthIndex = 0;
+            let currentWeekNumber = 0;
+
+            const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
             const updateViewTotals = (viewElement) => {
                 let totalSubtotal = 0;
@@ -671,12 +1070,18 @@
             const activateButton = (button) => {
                 btnManana.classList.remove('bg-[#c3ff3d]', 'text-black');
                 btnTarde.classList.remove('bg-[#fc3dff]', 'text-black');
+                btnHistorial.classList.remove('bg-purple-600', 'hover:bg-purple-500', 'active:bg-purple-700');
                 
                 btnManana.classList.add('bg-gray-800');
                 btnTarde.classList.add('bg-gray-800');
+                btnHistorial.classList.add('bg-gray-800');
 
                 mananaView.classList.add('hidden');
                 tardeView.classList.add('hidden');
+                yearView.classList.add('hidden');
+                historialView.classList.add('hidden');
+                weeklyView.classList.add('hidden');
+                dayView.classList.add('hidden');
                 loadingSpinner.classList.remove('hidden');
 
                 if (button === btnManana) {
@@ -685,6 +1090,9 @@
                 } else if (button === btnTarde) {
                     btnTarde.classList.add('bg-[#fc3dff]', 'text-black');
                     btnTarde.classList.remove('bg-gray-800');
+                } else if (button === btnHistorial) {
+                    btnHistorial.classList.add('bg-purple-600', 'hover:bg-purple-500', 'active:bg-purple-700');
+                    btnHistorial.classList.remove('bg-gray-800');
                 }
 
                 setTimeout(() => {
@@ -695,6 +1103,8 @@
                     } else if (button === btnTarde) {
                         tardeView.classList.remove('hidden');
                         updateViewTotals(tardeView);
+                    } else if (button === btnHistorial) {
+                        yearView.classList.remove('hidden');
                     }
                 }, 500); // Muestra el spinner por 0.5 segundos
             };
@@ -712,6 +1122,9 @@
             btnTarde.addEventListener('click', () => {
                 activateButton(btnTarde);
             });
+            btnHistorial.addEventListener('click', () => {
+                activateButton(btnHistorial);
+            });
             
             mainContainer.addEventListener('input', (event) => {
                 if (event.target.classList.contains('cantidad-input')) {
@@ -719,39 +1132,35 @@
                     const precioItem = currentRow.querySelector('.precio-item');
                     const subtotalItem = currentRow.querySelector('.subtotal-item');
                     const gananciaItem = currentRow.querySelector('.ganancia-item');
-                    
                     subtotalItem.classList.remove('animate-neon-flash');
                     void subtotalItem.offsetWidth;
                     subtotalItem.classList.add('animate-neon-flash');
-                    
                     gananciaItem.classList.remove('animate-neon-flash');
                     void gananciaItem.offsetWidth;
                     gananciaItem.classList.add('animate-neon-flash');
-
                     setTimeout(() => {
                         const cantidad = parseFloat(event.target.value) || 0;
                         const precio = parseFloat(precioItem.dataset.price);
                         const subtotal = cantidad * precio;
-
                         let ganancia = 0;
-                        // Check if the profit multiplier exists for the current view
                         if (currentRow.dataset.profitMultiplier) {
                             const profitMultiplier = parseFloat(currentRow.dataset.profitMultiplier);
                             ganancia = (cantidad * profitMultiplier) - subtotal;
                         } else {
-                            // Default calculation for the Tarde view
                             ganancia = subtotal * 0.20;
                         }
-
                         subtotalItem.textContent = `Q${subtotal.toLocaleString('es-GT')}`;
                         subtotalItem.dataset.subtotal = subtotal;
                         gananciaItem.textContent = `Q${ganancia.toLocaleString('es-GT')}`;
                         gananciaItem.dataset.ganancia = ganancia;
-
                         // Actualizar los totales de la vista activa
                         const activeView = mananaView.classList.contains('hidden') ? tardeView : mananaView;
                         updateViewTotals(activeView);
-
+                        // Guardar cantidades en Firestore para la vista correspondiente
+                        const viewElement = currentRow.closest('#manana-view, #tarde-view');
+                        if (viewElement) {
+                            saveProductQuantities(viewElement);
+                        }
                     }, 500);
                 }
             });
@@ -805,7 +1214,84 @@
                 toggleColumn(tardeView, 'show-ganancia');
                 arrow.classList.toggle('rotate-180');
             });
+            
+            // Manejador de eventos para los años
+            yearList.addEventListener('click', (event) => {
+                const yearItem = event.target.closest('.year-item');
+                if (yearItem) {
+                    currentYear = yearItem.dataset.year;
+                    monthlyTitle.textContent = `Ganancias de ${currentYear}`;
+                    yearView.classList.add('hidden');
+                    historialView.classList.remove('hidden');
+                    loadMonthTotals(currentYear);
+                }
+            });
+
+            // Manejador de eventos para los meses
+            monthlyList.addEventListener('click', (event) => {
+                const monthItem = event.target.closest('.month-item');
+                if (monthItem) {
+                    currentMonthName = monthItem.dataset.month;
+                    currentMonthIndex = parseInt(monthItem.dataset.monthIndex);
+                    weeklyTitle.textContent = `Ganancias de ${currentMonthName}`;
+                    historialView.classList.add('hidden');
+                    weeklyView.classList.remove('hidden');
+                    loadWeekTotals(currentYear, currentMonthIndex + 1);
+                }
+            });
+
+            // Manejador de eventos para las semanas
+            weeklyList.addEventListener('click', (event) => {
+                const weekItem = event.target.closest('.week-item');
+                if (weekItem) {
+                    currentWeekNumber = parseInt(weekItem.dataset.week);
+                    dayTitle.textContent = `Ganancias de la Semana ${currentWeekNumber} - ${currentMonthName} de ${currentYear}`;
+                    weeklyView.classList.add('hidden');
+                    dayView.classList.remove('hidden');
+                    dayList.innerHTML = '';
+                    // Determinar la fecha de inicio de la semana
+                    const startDay = (currentWeekNumber - 1) * 7 + 1;
+                    const startDate = new Date(currentYear, currentMonthIndex, startDay);
+                    for (let i = 0; i < 7; i++) {
+                        const currentDate = new Date(startDate);
+                        currentDate.setDate(startDate.getDate() + i);
+                        if (currentDate.getMonth() !== currentMonthIndex) {
+                            break;
+                        }
+                        const dayName = daysOfWeek[currentDate.getDay()];
+                        const dateNumber = currentDate.getDate();
+                        const dayElement = document.createElement('div');
+                        dayElement.className = 'flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer day-item';
+                        dayElement.innerHTML = `
+                            <span class="font-medium">${dayName} ${dateNumber}</span>
+                            <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                        `;
+                        dayList.appendChild(dayElement);
+                    }
+                    // Cargar totales de días
+                    loadDayTotals(currentYear, currentMonthIndex + 1, currentWeekNumber);
+                }
+            });
+
+            // Botón para volver de meses a años
+            backToYearsBtn.addEventListener('click', () => {
+                historialView.classList.add('hidden');
+                yearView.classList.remove('hidden');
+            });
+            
+            // Botón para volver de semanas a meses
+            backToMonthsBtn.addEventListener('click', () => {
+                weeklyView.classList.add('hidden');
+                historialView.classList.remove('hidden');
+            });
+
+            // Botón para volver de días a semanas
+            backToWeeksBtn.addEventListener('click', () => {
+                dayView.classList.add('hidden');
+                weeklyView.classList.remove('hidden');
+            });
         });
     </script>
 </body>
 </html>
+
