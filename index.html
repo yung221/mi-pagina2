@@ -278,7 +278,7 @@
                 </div>
 
                 <!-- Producto 8 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="2">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="5">
                     <span class="text-center precio-item text-base precio-col" data-price="3.75">Q3.75</span>
                     <span class="text-left">Filas de Galleta</span>
                     <div class="flex justify-center">
@@ -956,7 +956,7 @@
                 // Calcular semana del mes (1-5)
                 const week = Math.ceil(day / 7);
                 // Solo guardar si es después de las 16:48
-                if (hour < 16 || (hour === 16 && minute < 10)) return;
+                if (hour < 16 || (hour === 16 && minute < 48)) return;
                 // ID de documento para el día
                 const dayId = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
                 // Referencia a Firestore
@@ -1294,4 +1294,5 @@
     </script>
 </body>
 </html>
+
 
