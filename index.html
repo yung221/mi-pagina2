@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,7 @@
     <meta name="theme-color" content="#000000" />
 
     <meta name="color-scheme" content="dark light" />
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -16,40 +17,61 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #000000;
         }
+
         /* Oculta los controles de flechas para input[type="number"] */
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
+
         input[type="number"] {
             -moz-appearance: textfield;
         }
+
         /* Animación para el efecto de carga del subtotal y ganancia */
         @keyframes neon-flash {
-            0% { color: #fff; }
-            50% { color: #ff1493; } /* Rosa neón */
-            100% { color: #fff; }
+            0% {
+                color: #fff;
+            }
+
+            50% {
+                color: #ff1493;
+            }
+
+            /* Rosa neón */
+            100% {
+                color: #fff;
+            }
         }
+
         .animate-neon-flash {
             animation: neon-flash 0.5s ease-in-out;
         }
+
         /* Animación para el spinner de carga de la pestaña */
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
+
         .animate-spin-custom {
             animation: spin 1s linear infinite;
         }
 
         /* ESTILOS DEL MODAL CORREGIDOS */
         .modal {
-            display: none; 
+            display: none;
             position: fixed;
             z-index: 100;
             left: 0;
@@ -62,85 +84,103 @@
             justify-content: center;
             align-items: center;
         }
+
         .modal-container {
             /* Limita el ancho del contenedor en desktop pero permite usar 100% de su ancho interno */
-            width: 100%; 
+            width: 100%;
             max-width: 500px;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px 0;
         }
+
         .modal-content {
             background-color: #000000;
             padding: 2.5rem 1rem;
-            width: 90%; /* Ancho predeterminado para dejar margen en desktop */
+            width: 90%;
+            /* Ancho predeterminado para dejar margen en desktop */
             max-width: 500px;
-            
+
             /* ESTILO SOLICITADO: BORDES RECTOS SIN ESQUINAS REDONDEADAS */
-            border: 1px solid #FFFFFF; /* Borde base para color */
-            border-left: none; 
-            border-right: none; 
-            border-radius: 0; /* Asegura que no haya redondeo */
-            
+            border: 1px solid #FFFFFF;
+            /* Borde base para color */
+            border-left: none;
+            border-right: none;
+            border-radius: 0;
+            /* Asegura que no haya redondeo */
+
             text-align: center;
             position: relative;
         }
-        
+
         /* En móvil, se expande a 100% de ancho sin límite de max-width */
         @media (max-width: 767px) {
-             .modal-content {
-                width: 100%; 
+            .modal-content {
+                width: 100%;
                 max-width: none;
                 padding: 2.5rem 0.5rem;
-             }
-             /* Otros ajustes de layout móvil */
+            }
+
+            /* Otros ajustes de layout móvil */
             .grid-cols-5.responsive-grid {
                 grid-template-columns: 1fr 1fr 1fr;
             }
-            .precio-col, .ganancia-col {
+
+            .precio-col,
+            .ganancia-col {
                 display: none;
             }
+
             .show-precio .responsive-grid {
                 grid-template-columns: 1fr 1fr 1fr 1fr;
             }
+
             .show-precio .precio-col {
                 display: block;
             }
+
             .show-ganancia .responsive-grid {
                 grid-template-columns: 1fr 1fr 1fr 1fr;
             }
+
             .show-ganancia .ganancia-col {
                 display: block;
             }
+
             .show-precio.show-ganancia .responsive-grid {
                 grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
             }
+
             .show-precio.show-ganancia .precio-col,
             .show-precio.show-ganancia .ganancia-col {
                 display: block;
             }
         }
+
         /* COLORES NEÓN */
         .neon-pink {
-            color: #fc3dff; /* Rosa neón Correcto */
+            color: #fc3dff;
+            /* Rosa neón Correcto */
         }
+
         .neon-green {
             color: #c3ff3d;
         }
-        
+
         /* Botón de cerrar - color celeste simple */
         .simple-blue-btn {
-            background-color: #00bcd4; 
+            background-color: #00bcd4;
             color: #000000;
             font-weight: bold;
         }
+
         .simple-blue-btn:hover {
             background-color: #0099ab;
         }
-
     </style>
 </head>
+
 <body class="flex flex-col items-center justify-start min-h-screen">
     <!-- Contenedor principal con márgenes para dispositivos móviles -->
     <div class="bg-black text-white w-full h-full px-4 md:px-8">
@@ -150,182 +190,207 @@
 
             <!-- Botón Generar resumen -->
             <div class="flex justify-center mb-6">
-                <button id="btn-resumen" class="px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 active:bg-gray-600">
+                <button id="btn-resumen"
+                    class="px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 active:bg-gray-600">
                     Generar resumen
                 </button>
             </div>
-
-            <!-- Nuevo botón Guardar día -->
-            <div class="flex justify-center mb-6">
-                <button id="btn-guardar-dia"
-                    class="px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 active:bg-gray-600">
-                    Guardar día
-                </button>
-            </div>
-
 
             <!-- Contenedor flex para los botones de vista y los botones de alternar -->
             <div class="flex items-center mb-6 w-full">
                 <!-- Contenedor para el botón de precio a la izquierda -->
                 <div class="flex-grow flex justify-start">
-                     <!-- Botón para alternar la columna de precio -->
-                    <button id="toggle-precio-btn" class="p-2 w-10 h-10 flex items-center justify-center rounded-lg bg-gray-800 text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500" title="Mostrar/Ocultar precios">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 18l6-6-6-6"/>
+                    <!-- Botón para alternar la columna de precio -->
+                    <button id="toggle-precio-btn"
+                        class="p-2 w-10 h-10 flex items-center justify-center rounded-lg bg-gray-800 text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        title="Mostrar/Ocultar precios">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform transition-transform"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 18l6-6-6-6" />
                         </svg>
                     </button>
                 </div>
                 <!-- Botones de vista centrados -->
                 <div class="flex gap-4">
-                    <button id="btn-manana" class="px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 active:bg-gray-600">
+                    <button id="btn-manana"
+                        class="px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 active:bg-gray-600">
                         Mañana
                     </button>
-                    <button id="btn-tarde" class="px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                    <button id="btn-tarde"
+                        class="px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
                         Tarde
                     </button>
                 </div>
                 <!-- Contenedor para el botón de ganancia a la derecha -->
                 <div class="flex-grow flex justify-end">
-                     <!-- Botón para alternar la columna de ganancia -->
-                    <button id="toggle-ganancia-btn" class="p-2 w-10 h-10 flex items-center justify-center rounded-lg bg-gray-800 text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500" title="Mostrar/Ocultar ganancias">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M15 18l-6-6 6-6"/>
+                    <!-- Botón para alternar la columna de ganancia -->
+                    <button id="toggle-ganancia-btn"
+                        class="p-2 w-10 h-10 flex items-center justify-center rounded-lg bg-gray-800 text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        title="Mostrar/Ocultar ganancias">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform transition-transform"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15 18l-6-6 6-6" />
                         </svg>
                     </button>
                 </div>
             </div>
         </div>
-        
+
         <!-- Spinner de carga -->
         <div id="loading-spinner" class="hidden flex justify-center items-center h-48">
-            <div class="w-12 h-12 border-4 border-t-4 border-gray-200 border-solid rounded-full animate-spin-custom" style="border-top-color: #ff1493;"></div>
+            <div class="w-12 h-12 border-4 border-t-4 border-gray-200 border-solid rounded-full animate-spin-custom"
+                style="border-top-color: #ff1493;"></div>
         </div>
 
         <!-- Vista de la mañana (inicialmente visible) -->
         <div id="manana-view" class="p-0">
             <div class="flex flex-col gap-0">
                 <!-- Headers de la lista -->
-                <div class="grid grid-cols-5 responsive-grid items-center text-sm text-gray-400 font-medium pb-1 border-b border-gray-600">
+                <div
+                    class="grid grid-cols-5 responsive-grid items-center text-sm text-gray-400 font-medium pb-1 border-b border-gray-600">
                     <span class="text-center precio-col">Precio</span>
                     <span class="text-left">Producto</span>
                     <span class="text-center">Cantidad</span>
                     <span class="text-center">Subtotal</span>
                     <span class="text-center ganancia-col">Ganancia</span>
                 </div>
-                
+
                 <!-- Productos -->
                 <!-- Producto 1 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="1.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="1.5">
                     <span class="text-center precio-item text-base precio-col" data-price="1.25">Q1.25</span>
                     <span class="text-left">Pirujos grandes</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 2 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="0.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="0.5">
                     <span class="text-center precio-item text-base precio-col" data-price="0.40">Q0.40</span>
                     <span class="text-left">Pirujitos</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 3 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="0.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="0.5">
                     <span class="text-center precio-item text-base precio-col" data-price="0.40">Q0.40</span>
                     <span class="text-left">Tostados</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 4 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="0.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="0.5">
                     <span class="text-center precio-item text-base precio-col" data-price="0.40">Q0.40</span>
                     <span class="text-left">Pan dulce</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 5 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="3">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="3">
                     <span class="text-center precio-item text-base precio-col" data-price="2.40">Q2.40</span>
                     <span class="text-left">Francés</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 6 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="2">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="2">
                     <span class="text-center precio-item text-base precio-col" data-price="1.50">Q1.50</span>
                     <span class="text-left">Pan grande</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 7 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="2">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="2">
                     <span class="text-center precio-item text-base precio-col" data-price="1.50">Q1.50</span>
                     <span class="text-left">Zepelines</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 8 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="5">
                     <span class="text-center precio-item text-base precio-col" data-price="3.75">Q3.75</span>
                     <span class="text-left">Filas de Galleta</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 9 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="10">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="10">
                     <span class="text-center precio-item text-base precio-col" data-price="7.50">Q7.50</span>
                     <span class="text-left">Champurradas</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 10 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="10">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="10">
                     <span class="text-center precio-item text-base precio-col" data-price="7.50">Q7.50</span>
                     <span class="text-left">Champurradas Integrales</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Fila de totales -->
-                <div class="total-row grid grid-cols-5 responsive-grid items-center text-lg py-2 border-t border-gray-600 mt-2">
+                <div
+                    class="total-row grid grid-cols-5 responsive-grid items-center text-lg py-2 border-t border-gray-600 mt-2">
                     <span class="col-span-2 text-left font-bold text-base">Total de pago/ganancia</span>
                     <span class="precio-col"></span>
                     <span class="text-center total-subtotal font-bold text-lg text-[#fc3dff] pr-2">Q0</span>
@@ -338,303 +403,357 @@
         <div id="tarde-view" class="hidden p-0">
             <div class="flex flex-col gap-0">
                 <!-- Headers de la lista -->
-                <div class="grid grid-cols-5 responsive-grid items-center text-sm text-gray-400 font-medium pb-1 border-b border-gray-600">
+                <div
+                    class="grid grid-cols-5 responsive-grid items-center text-sm text-gray-400 font-medium pb-1 border-b border-gray-600">
                     <span class="text-center precio-col">Precio</span>
                     <span class="text-left">Producto</span>
                     <span class="text-center">Cantidad</span>
                     <span class="text-center">Subtotal</span>
                     <span class="text-center ganancia-col">Ganancia</span>
                 </div>
-                
+
                 <!-- Productos -->
                 <!-- Producto 1 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="1.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="1.5">
                     <span class="text-center precio-item text-base precio-col" data-price="1.25">Q1.25</span>
                     <span class="text-left">Campechanas</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 2 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="1.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="1.5">
                     <span class="text-center precio-item text-base precio-col" data-price="1.25">Q1.25</span>
                     <span class="text-left">Lenguas</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
-                
+
                 <!-- Producto 3 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="1.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="1.5">
                     <span class="text-center precio-item text-base precio-col" data-price="1.25">Q1.25</span>
                     <span class="text-left">Pirujos grandes</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
-                
+
                 <!-- Producto 4 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="2">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="2">
                     <span class="text-center precio-item text-base precio-col" data-price="1.50">Q1.50</span>
                     <span class="text-left">Panes grandes</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 5 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="2">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="2">
                     <span class="text-center precio-item text-base precio-col" data-price="1.50">Q1.50</span>
                     <span class="text-left">Cortadas</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
-                
+
                 <!-- Producto 6 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="2">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="2">
                     <span class="text-center precio-item text-base precio-col" data-price="1.50">Q1.50</span>
                     <span class="text-left">Zepelines</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 7 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="0.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="0.5">
                     <span class="text-center precio-item text-base precio-col" data-price="0.40">Q0.40</span>
                     <span class="text-left">Tostados</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
-                
+
                 <!-- Producto 8 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="0.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="0.5">
                     <span class="text-center precio-item text-base precio-col" data-price="0.40">Q0.40</span>
                     <span class="text-left">Pan dulce</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
-                
+
                 <!-- Producto 9 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="0.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="0.5">
                     <span class="text-center precio-item text-base precio-col" data-price="0.40">Q0.40</span>
                     <span class="text-left">Pirujitos</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 10 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="3">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="3">
                     <span class="text-center precio-item text-base precio-col" data-price="2.40">Q2.40</span>
                     <span class="text-left">Francés</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 11 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="5">
                     <span class="text-center precio-item text-base precio-col" data-price="3.75">Q3.75</span>
                     <span class="text-left">Filas de galleta</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 12 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="0.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="0.5">
                     <span class="text-center precio-item text-base precio-col" data-price="0.40">Q0.40</span>
                     <span class="text-left">Bollos</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 13 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="1.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="1.5">
                     <span class="text-center precio-item text-base precio-col" data-price="1">Q1</span>
                     <span class="text-left">Bocados</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 14 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="1.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="1.5">
                     <span class="text-center precio-item text-base precio-col" data-price="1.25">Q1.25</span>
                     <span class="text-left">Pan integral</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 15 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="3.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="3.5">
                     <span class="text-center precio-item text-base precio-col" data-price="3">Q3</span>
                     <span class="text-left">Empanadas</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 16 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="2">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="2">
                     <span class="text-center precio-item text-base precio-col" data-price="1.50">Q1.50</span>
                     <span class="text-left">Encanelados</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 17 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="1.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="1.5">
                     <span class="text-center precio-item text-base precio-col" data-price="1.50">Q1.50</span>
                     <span class="text-left">Trenzas</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 18 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="0.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="0.5">
                     <span class="text-center precio-item text-base precio-col" data-price="0.40">Q0.40</span>
                     <span class="text-left">Palitos</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
-                
+
                 <!-- Producto 19 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="1.25">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="1.25">
                     <span class="text-center precio-item text-base precio-col" data-price="1.25">Q1.25</span>
                     <span class="text-left">Cemitas</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 20 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="1.25">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="1.25">
                     <span class="text-center precio-item text-base precio-col" data-price="1.25">Q1.25</span>
                     <span class="text-left">Polvorosas</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 21 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="3.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="3.5">
                     <span class="text-center precio-item text-base precio-col" data-price="3">Q3</span>
                     <span class="text-left">Donas</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 22 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="3.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="3.5">
                     <span class="text-center precio-item text-base precio-col" data-price="3">Q3</span>
                     <span class="text-left">Cubilete de queso</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
-                
+
                 <!-- Producto 23 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="2">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="2">
                     <span class="text-center precio-item text-base precio-col" data-price="1.50">Q1.50</span>
                     <span class="text-left">Cubilete de chocolate</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 24 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="10">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="10">
                     <span class="text-center precio-item text-base precio-col" data-price="7.50">Q7.50</span>
                     <span class="text-left">Champurradas</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
-                
+
                 <!-- Producto 25 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="10">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="10">
                     <span class="text-center precio-item text-base precio-col" data-price="7.50">Q7.50</span>
                     <span class="text-left">Champurradas Integrales</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Producto 26 -->
-                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600" data-profit-multiplier="0.5">
+                <div class="product-row grid grid-cols-5 responsive-grid items-center text-lg py-1 border-b border-gray-600"
+                    data-profit-multiplier="0.5">
                     <span class="text-center precio-item text-base precio-col" data-price="0.40">Q0.40</span>
                     <span class="text-left">Molletes</span>
                     <div class="flex justify-center">
-                        <input type="number" placeholder="" min="1" class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
+                        <input type="number" placeholder="" min="1"
+                            class="cantidad-input w-12 h-12 text-center bg-gray-900 text-white rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer" />
                     </div>
                     <span class="text-center subtotal-item font-semibold" data-subtotal="0">Q0</span>
                     <span class="text-center ganancia-item font-semibold ganancia-col" data-ganancia="0">Q0</span>
                 </div>
 
                 <!-- Fila de totales -->
-                <div class="total-row grid grid-cols-5 responsive-grid items-center text-lg py-2 border-t border-gray-600 mt-2">
+                <div
+                    class="total-row grid grid-cols-5 responsive-grid items-center text-lg py-2 border-t border-gray-600 mt-2">
                     <span class="col-span-2 text-left font-bold text-base">Total de pago/ganancia</span>
                     <span class="precio-col"></span>
                     <span class="text-center total-subtotal font-bold text-lg text-[#fc3dff] pr-2">Q0</span>
@@ -643,9 +762,18 @@
             </div>
         </div>
 
+        <!--Botón de Guardar día-->
+        <div class="flex justify-center mt-6">
+            <button id="btn-guardar-dia"
+                class="px-6 py-2 rounded-full font-medium bg-green-700 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 active:bg-green-800">
+                Guardar día
+            </button>
+        </div>
+
         <!-- Botón del historial -->
         <div class="flex justify-center mt-6">
-            <button id="btn-historial" class="px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 active:bg-gray-600">
+            <button id="btn-historial"
+                class="px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 active:bg-gray-600">
                 Historial
             </button>
         </div>
@@ -654,108 +782,132 @@
         <div id="year-view" class="hidden p-0 mt-6">
             <h2 class="text-2xl font-bold mb-4 text-center">Ganancias anuales</h2>
             <div class="flex flex-col gap-2" id="year-list">
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer year-item" data-year="2025">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer year-item"
+                    data-year="2025">
                     <span class="font-medium">2025</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer year-item" data-year="2026">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer year-item"
+                    data-year="2026">
                     <span class="font-medium">2026</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer year-item" data-year="2027">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer year-item"
+                    data-year="2027">
                     <span class="font-medium">2027</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer year-item" data-year="2028">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer year-item"
+                    data-year="2028">
                     <span class="font-medium">2028</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
             </div>
-            <button id="back-from-years-btn" class="hidden mt-4 px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">Volver</button>
+            <button id="back-from-years-btn"
+                class="hidden mt-4 px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">Volver</button>
         </div>
 
         <!-- Vista del historial (inicialmente oculta) -->
         <div id="historial-view" class="hidden p-0 mt-6">
             <h2 id="monthly-title" class="text-2xl font-bold mb-4 text-center"></h2>
             <div class="flex flex-col gap-2" id="monthly-list">
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Enero" data-month-index="0">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item"
+                    data-month="Enero" data-month-index="0">
                     <span class="font-medium">Enero</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Febrero" data-month-index="1">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item"
+                    data-month="Febrero" data-month-index="1">
                     <span class="font-medium">Febrero</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Marzo" data-month-index="2">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item"
+                    data-month="Marzo" data-month-index="2">
                     <span class="font-medium">Marzo</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Abril" data-month-index="3">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item"
+                    data-month="Abril" data-month-index="3">
                     <span class="font-medium">Abril</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Mayo" data-month-index="4">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item"
+                    data-month="Mayo" data-month-index="4">
                     <span class="font-medium">Mayo</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Junio" data-month-index="5">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item"
+                    data-month="Junio" data-month-index="5">
                     <span class="font-medium">Junio</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Julio" data-month-index="6">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item"
+                    data-month="Julio" data-month-index="6">
                     <span class="font-medium">Julio</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Agosto" data-month-index="7">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item"
+                    data-month="Agosto" data-month-index="7">
                     <span class="font-medium">Agosto</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Septiembre" data-month-index="8">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item"
+                    data-month="Septiembre" data-month-index="8">
                     <span class="font-medium">Septiembre</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Octubre" data-month-index="9">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item"
+                    data-month="Octubre" data-month-index="9">
                     <span class="font-medium">Octubre</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Noviembre" data-month-index="10">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item"
+                    data-month="Noviembre" data-month-index="10">
                     <span class="font-medium">Noviembre</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Diciembre" data-month-index="11">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item"
+                    data-month="Diciembre" data-month-index="11">
                     <span class="font-medium">Diciembre</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
             </div>
-            <button id="back-to-years-btn" class="mt-4 px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">Volver</button>
+            <button id="back-to-years-btn"
+                class="mt-4 px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">Volver</button>
         </div>
-        
+
         <!-- Vista de la semana (inicialmente oculta) -->
         <div id="weekly-view" class="hidden p-0 mt-6">
             <h2 id="weekly-title" class="text-2xl font-bold mb-4 text-center"></h2>
             <div class="flex flex-col gap-2" id="weekly-list">
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item" data-week="1">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item"
+                    data-week="1">
                     <span class="font-medium">Semana 1</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item" data-week="2">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item"
+                    data-week="2">
                     <span class="font-medium">Semana 2</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item" data-week="3">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item"
+                    data-week="3">
                     <span class="font-medium">Semana 3</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item" data-week="4">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item"
+                    data-week="4">
                     <span class="font-medium">Semana 4</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
-                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item" data-week="5">
+                <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item"
+                    data-week="5">
                     <span class="font-medium">Semana 5</span>
                     <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
             </div>
-            <button id="back-to-months-btn" class="mt-4 px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">Volver</button>
+            <button id="back-to-months-btn"
+                class="mt-4 px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">Volver</button>
         </div>
 
         <!-- Vista de los días (nueva, inicialmente oculta) -->
@@ -764,7 +916,8 @@
             <div class="flex flex-col gap-2" id="day-list">
                 <!-- Los días se generarán dinámicamente aquí -->
             </div>
-            <button id="back-to-weeks-btn" class="mt-4 px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">Volver</button>
+            <button id="back-to-weeks-btn"
+                class="mt-4 px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">Volver</button>
         </div>
 
     </div>
@@ -772,14 +925,15 @@
     <!-- Modal para el resumen -->
     <div id="resumen-modal" class="modal">
         <!-- El modal-container maneja el centrado y el ancho máximo en desktop -->
-        <div class="modal-container"> 
+        <div class="modal-container">
             <!-- Se utiliza modal-content con el borde recto y sin redondeo -->
             <div class="modal-content text-white flex flex-col items-center">
                 <h2 class="text-2xl font-bold mb-8">Resumen del día</h2>
 
                 <!-- Contenedor del spinner -->
                 <div id="modal-spinner" class="flex justify-center items-center h-24">
-                    <div class="w-10 h-10 border-4 border-t-4 border-gray-200 border-solid rounded-full animate-spin-custom" style="border-top-color: #ff1493;"></div>
+                    <div class="w-10 h-10 border-4 border-t-4 border-gray-200 border-solid rounded-full animate-spin-custom"
+                        style="border-top-color: #ff1493;"></div>
                 </div>
 
                 <!-- Contenedor del resumen (inicialmente oculto) -->
@@ -796,78 +950,79 @@
                     </div>
                 </div>
             </div>
-             <!-- Botón de Cerrar (FUERA DEL RECUADRO) -->
-            <button id="close-modal" class="mt-8 px-8 py-3 rounded-full simple-blue-btn transition duration-300">Cerrar</button>
+            <!-- Botón de Cerrar (FUERA DEL RECUADRO) -->
+            <button id="close-modal"
+                class="mt-8 px-8 py-3 rounded-full simple-blue-btn transition duration-300">Cerrar</button>
         </div>
     </div>
-    
+
     <script>
 
-            // --- INICIO: Configuración e inicialización de Firebase ---
-            const firebaseConfig = {
-                apiKey: "AIzaSyC_Mduafww-kwV7yIFEvcoEE9GnYjBH4Gc",
-                authDomain: "visualprueba2.firebaseapp.com",
-                projectId: "visualprueba2",
-                storageBucket: "visualprueba2.firebasestorage.app",
-                messagingSenderId: "637609680539",
-                appId: "1:637609680539:web:b27485e3d28f666944303e",
-                measurementId: "G-GKJYL45Z2M"
-            };
-            firebase.initializeApp(firebaseConfig);
-            const db = firebase.firestore();
-            // --- FIN: Configuración e inicialización de Firebase ---
+        // --- INICIO: Configuración e inicialización de Firebase ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyC_Mduafww-kwV7yIFEvcoEE9GnYjBH4Gc",
+            authDomain: "visualprueba2.firebaseapp.com",
+            projectId: "visualprueba2",
+            storageBucket: "visualprueba2.firebasestorage.app",
+            messagingSenderId: "637609680539",
+            appId: "1:637609680539:web:b27485e3d28f666944303e",
+            measurementId: "G-GKJYL45Z2M"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        // --- FIN: Configuración e inicialización de Firebase ---
 
-            // Función para obtener el nombre de la vista (manana/tarde)
-            function getViewName(viewElement) {
-                if (viewElement.id === 'manana-view') return 'manana';
-                if (viewElement.id === 'tarde-view') return 'tarde';
-                return 'otros';
+        // Función para obtener el nombre de la vista (manana/tarde)
+        function getViewName(viewElement) {
+            if (viewElement.id === 'manana-view') return 'manana';
+            if (viewElement.id === 'tarde-view') return 'tarde';
+            return 'otros';
+        }
+
+        // Función para guardar cantidades de productos en Firestore
+        async function saveProductQuantities(viewElement) {
+            const viewName = getViewName(viewElement);
+            const rows = viewElement.querySelectorAll('.product-row');
+            const data = {};
+            rows.forEach((row, idx) => {
+                const input = row.querySelector('.cantidad-input');
+                if (input && input.value !== "") {
+                    data[idx] = Number(input.value);
+                } // Si está vacío, no se guarda nada para ese índice
+            });
+            try {
+                await db.collection('ventas').doc(viewName).set(data);
+            } catch (e) {
+                console.error('Error guardando cantidades en Firestore:', e);
             }
+        }
 
-            // Función para guardar cantidades de productos en Firestore
-            async function saveProductQuantities(viewElement) {
-                const viewName = getViewName(viewElement);
-                const rows = viewElement.querySelectorAll('.product-row');
-                const data = {};
-                rows.forEach((row, idx) => {
-                    const input = row.querySelector('.cantidad-input');
-                    if (input && input.value !== "") {
-                        data[idx] = Number(input.value);
-                    } // Si está vacío, no se guarda nada para ese índice
-                });
-                try {
-                    await db.collection('ventas').doc(viewName).set(data);
-                } catch (e) {
-                    console.error('Error guardando cantidades en Firestore:', e);
-                }
-            }
-
-            // Función para cargar cantidades de productos desde Firestore
-            async function loadProductQuantities(viewElement) {
-                const viewName = getViewName(viewElement);
-                try {
-                    const doc = await db.collection('ventas').doc(viewName).get();
-                    if (doc.exists) {
-                        const data = doc.data();
-                        const rows = viewElement.querySelectorAll('.product-row');
-                        rows.forEach((row, idx) => {
-                            const input = row.querySelector('.cantidad-input');
-                            if (input) {
-                                if (data[idx] === undefined || data[idx] === null || data[idx] === "") {
-                                    input.value = "";
-                                } else {
-                                    input.value = data[idx];
-                                }
-                                // Disparar evento input para actualizar subtotales
-                                input.dispatchEvent(new Event('input', { bubbles: true }));
+        // Función para cargar cantidades de productos desde Firestore
+        async function loadProductQuantities(viewElement) {
+            const viewName = getViewName(viewElement);
+            try {
+                const doc = await db.collection('ventas').doc(viewName).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    const rows = viewElement.querySelectorAll('.product-row');
+                    rows.forEach((row, idx) => {
+                        const input = row.querySelector('.cantidad-input');
+                        if (input) {
+                            if (data[idx] === undefined || data[idx] === null || data[idx] === "") {
+                                input.value = "";
+                            } else {
+                                input.value = data[idx];
                             }
-                        });
-                    }
-                } catch (e) {
-                    console.error('Error cargando cantidades de Firestore:', e);
+                            // Disparar evento input para actualizar subtotales
+                            input.dispatchEvent(new Event('input', { bubbles: true }));
+                        }
+                    });
                 }
+            } catch (e) {
+                console.error('Error cargando cantidades de Firestore:', e);
             }
-        
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             // --- INICIO: Mostrar historial desde Firestore ---
             // Cargar totales de años
@@ -896,7 +1051,7 @@
                             }
                         }
                     }
-                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', {minimumFractionDigits:0, maximumFractionDigits:2})}`;
+                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
                 }
             }
 
@@ -915,7 +1070,7 @@
                             if (data && data.totalGanancia) total += data.totalGanancia;
                         }
                     }
-                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', {minimumFractionDigits:0, maximumFractionDigits:2})}`;
+                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
                 }
             }
 
@@ -932,7 +1087,7 @@
                         const data = diaDoc.data();
                         if (data && data.totalGanancia) total += data.totalGanancia;
                     }
-                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', {minimumFractionDigits:0, maximumFractionDigits:2})}`;
+                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
                 }
             }
 
@@ -946,13 +1101,13 @@
                     const match = dayText.match(/\b(\d{1,2})\b$/);
                     if (!match) continue;
                     const day = match[1];
-                    const dayId = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                    const dayId = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                     const doc = await db.collection('historial').doc(year).collection(`${month}`).doc(`sem${week}`).collection('dias').doc(dayId).get();
                     let total = 0;
                     if (doc.exists && doc.data().totalGanancia) {
                         total = doc.data().totalGanancia;
                     }
-                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', {minimumFractionDigits:0, maximumFractionDigits:2})}`;
+                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
                 }
             }
 
@@ -970,7 +1125,7 @@
                 // Calcular semana del mes (1-5)
                 const week = Math.ceil(day / 7);
                 // Solo guardar si es después de las 16:48
-                if (hour < 18 || (hour === 18 && minute < 18)) return;
+                if (hour < 10 || (hour === 10 && minute < 42)) return;
                 // ID de documento para el día
                 const dayId = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 // Referencia a Firestore
@@ -1000,8 +1155,15 @@
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
             }
-            // Llamar al cargar la página
-            saveDailySummaryIfNeeded();
+
+            const btnGuardarDia = document.getElementById('btn-guardar-dia');
+            btnGuardarDia.addEventListener('click', async () => {
+                await saveDailySummaryIfNeeded();
+                alert('¡Resumen del día guardado en el historial!');
+            });
+
+            // ELIMINADO: Llamar al cargar la página
+
             // --- FIN: Guardado automático de resumen diario ---
             const btnManana = document.getElementById('btn-manana');
             // Cargar cantidades desde Firestore al cargar la página
@@ -1025,7 +1187,7 @@
             const pagoTotalSpan = document.getElementById('pago-total');
             const gananciaTotalSpan = document.getElementById('ganancia-total');
             const body = document.body;
-            
+
             const togglePrecioBtn = document.getElementById('toggle-precio-btn');
             const toggleGananciaBtn = document.getElementById('toggle-ganancia-btn');
             const yearList = document.getElementById('year-list');
@@ -1055,7 +1217,7 @@
                     const value = parseFloat(item.dataset.subtotal) || 0;
                     totalSubtotal += value;
                 });
-                
+
                 const gananciaItems = viewElement.querySelectorAll('.ganancia-item');
                 gananciaItems.forEach(item => {
                     const value = parseFloat(item.dataset.ganancia) || 0;
@@ -1078,7 +1240,7 @@
                 btnManana.classList.remove('bg-[#c3ff3d]', 'text-black');
                 btnTarde.classList.remove('bg-[#fc3dff]', 'text-black');
                 btnHistorial.classList.remove('bg-purple-600', 'hover:bg-purple-500', 'active:bg-purple-700');
-                
+
                 btnManana.classList.add('bg-gray-800');
                 btnTarde.classList.add('bg-gray-800');
                 btnHistorial.classList.add('bg-gray-800');
@@ -1115,7 +1277,7 @@
                     }
                 }, 500); // Muestra el spinner por 0.5 segundos
             };
-            
+
             // Establecer el estado inicial
             activateButton(btnManana);
             // Oculta ambas columnas al inicio
@@ -1132,7 +1294,7 @@
             btnHistorial.addEventListener('click', () => {
                 activateButton(btnHistorial);
             });
-            
+
             mainContainer.addEventListener('input', (event) => {
                 if (event.target.classList.contains('cantidad-input')) {
                     const currentRow = event.target.closest('.product-row');
@@ -1200,7 +1362,7 @@
                 resumenModal.style.display = 'none';
                 body.style.overflow = 'auto';
             });
-            
+
             // Función para alternar la visibilidad de la columna
             const toggleColumn = (viewElement, className) => {
                 viewElement.classList.toggle(className);
@@ -1221,7 +1383,7 @@
                 toggleColumn(tardeView, 'show-ganancia');
                 arrow.classList.toggle('rotate-180');
             });
-            
+
             // Manejador de eventos para los años
             yearList.addEventListener('click', (event) => {
                 const yearItem = event.target.closest('.year-item');
@@ -1285,7 +1447,7 @@
                 historialView.classList.add('hidden');
                 yearView.classList.remove('hidden');
             });
-            
+
             // Botón para volver de semanas a meses
             backToMonthsBtn.addEventListener('click', () => {
                 weeklyView.classList.add('hidden');
@@ -1300,5 +1462,5 @@
         });
     </script>
 </body>
-</html>
 
+</html>
