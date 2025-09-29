@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panadería MDJ</title>
+
+    <meta name="theme-color" content="#000000" />
+
+    <meta name="color-scheme" content="dark light" />
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -149,6 +154,15 @@
                     Generar resumen
                 </button>
             </div>
+
+            <!-- Nuevo botón Guardar día -->
+            <div class="flex justify-center mb-6">
+                <button id="btn-guardar-dia"
+                    class="px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 active:bg-gray-600">
+                    Guardar día
+                </button>
+            </div>
+
 
             <!-- Contenedor flex para los botones de vista y los botones de alternar -->
             <div class="flex items-center mb-6 w-full">
@@ -642,19 +656,19 @@
             <div class="flex flex-col gap-2" id="year-list">
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer year-item" data-year="2025">
                     <span class="font-medium">2025</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer year-item" data-year="2026">
                     <span class="font-medium">2026</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer year-item" data-year="2027">
                     <span class="font-medium">2027</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer year-item" data-year="2028">
                     <span class="font-medium">2028</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
             </div>
             <button id="back-from-years-btn" class="hidden mt-4 px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">Volver</button>
@@ -666,51 +680,51 @@
             <div class="flex flex-col gap-2" id="monthly-list">
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Enero" data-month-index="0">
                     <span class="font-medium">Enero</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Febrero" data-month-index="1">
                     <span class="font-medium">Febrero</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Marzo" data-month-index="2">
                     <span class="font-medium">Marzo</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Abril" data-month-index="3">
                     <span class="font-medium">Abril</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Mayo" data-month-index="4">
                     <span class="font-medium">Mayo</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Junio" data-month-index="5">
                     <span class="font-medium">Junio</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Julio" data-month-index="6">
                     <span class="font-medium">Julio</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Agosto" data-month-index="7">
                     <span class="font-medium">Agosto</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Septiembre" data-month-index="8">
                     <span class="font-medium">Septiembre</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Octubre" data-month-index="9">
                     <span class="font-medium">Octubre</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Noviembre" data-month-index="10">
                     <span class="font-medium">Noviembre</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer month-item" data-month="Diciembre" data-month-index="11">
                     <span class="font-medium">Diciembre</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
             </div>
             <button id="back-to-years-btn" class="mt-4 px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">Volver</button>
@@ -722,23 +736,23 @@
             <div class="flex flex-col gap-2" id="weekly-list">
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item" data-week="1">
                     <span class="font-medium">Semana 1</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item" data-week="2">
                     <span class="font-medium">Semana 2</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item" data-week="3">
                     <span class="font-medium">Semana 3</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item" data-week="4">
                     <span class="font-medium">Semana 4</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer week-item" data-week="5">
                     <span class="font-medium">Semana 5</span>
-                    <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                    <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                 </div>
             </div>
             <button id="back-to-months-btn" class="mt-4 px-6 py-2 rounded-full font-medium bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">Volver</button>
@@ -882,7 +896,7 @@
                             }
                         }
                     }
-                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', {minimumFractionDigits:0, maximumFractionDigits:2})}`;
                 }
             }
 
@@ -901,7 +915,7 @@
                             if (data && data.totalGanancia) total += data.totalGanancia;
                         }
                     }
-                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', {minimumFractionDigits:0, maximumFractionDigits:2})}`;
                 }
             }
 
@@ -918,7 +932,7 @@
                         const data = diaDoc.data();
                         if (data && data.totalGanancia) total += data.totalGanancia;
                     }
-                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', {minimumFractionDigits:0, maximumFractionDigits:2})}`;
                 }
             }
 
@@ -938,7 +952,7 @@
                     if (doc.exists && doc.data().totalGanancia) {
                         total = doc.data().totalGanancia;
                     }
-                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+                    item.querySelector('span.font-bold').textContent = `Q${Number(total).toLocaleString('es-GT', {minimumFractionDigits:0, maximumFractionDigits:2})}`;
                 }
             }
 
@@ -956,34 +970,27 @@
                 // Calcular semana del mes (1-5)
                 const week = Math.ceil(day / 7);
                 // Solo guardar si es después de las 16:48
-                if (hour < 16 || (hour === 16 && minute < 48)) return;
+                if (hour < 18 || (hour === 18 && minute < 18)) return;
                 // ID de documento para el día
-                const dayId = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                const dayId = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 // Referencia a Firestore
                 const resumenRef = db.collection('historial').doc(`${year}`).collection(`${month}`).doc(`sem${week}`).collection('dias').doc(dayId);
                 // Verificar si ya existe
                 const doc = await resumenRef.get();
                 if (doc.exists) return; // Ya guardado
-                // Forzar recarga de datos desde Firestore antes de calcular totales
+
+                // Forzar recarga y actualización de totales
                 await loadProductQuantities(document.getElementById('manana-view'));
                 await loadProductQuantities(document.getElementById('tarde-view'));
-                // Esperar un pequeño tiempo para que el DOM se actualice
                 await new Promise(res => setTimeout(res, 300));
-                function getTotalGananciaFromView(viewElement) {
-                    const totalGananciaSpan = viewElement.querySelector('.total-ganancia');
-                    if (!totalGananciaSpan) return 0;
-                    // Extraer número de texto tipo "Q123.45"
-                    const match = totalGananciaSpan.textContent.match(/Q([\d.,]+)/);
-                    if (match) {
-                        // Reemplazar coma por nada y punto por punto decimal
-                        return parseFloat(match[1].replace(/,/g, '')) || 0;
-                    }
-                    return 0;
-                }
-                const mananaGanancia = getTotalGananciaFromView(document.getElementById('manana-view'));
-                const tardeGanancia = getTotalGananciaFromView(document.getElementById('tarde-view'));
-                const totalGanancia = mananaGanancia + tardeGanancia;
-                // Guardar solo la ganancia en Firestore
+                updateViewTotals(document.getElementById('manana-view'));
+                updateViewTotals(document.getElementById('tarde-view'));
+
+                // Usar la misma lógica que el modal "Resumen"
+                const mananaTotals = updateViewTotals(document.getElementById('manana-view'));
+                const tardeTotals = updateViewTotals(document.getElementById('tarde-view'));
+                const totalGanancia = mananaTotals.totalGanancia + tardeTotals.totalGanancia;
+
                 await resumenRef.set({
                     year,
                     month,
@@ -1264,7 +1271,7 @@
                         dayElement.className = 'flex justify-between items-center py-2 border-b border-gray-600 cursor-pointer day-item';
                         dayElement.innerHTML = `
                             <span class="font-medium">${dayName} ${dateNumber}</span>
-                            <span class="font-bold text-lg text-[#c3ff3d]">Q0.00</span>
+                            <span class="font-bold text-lg text-[#c3ff3d]">Q0</span>
                         `;
                         dayList.appendChild(dayElement);
                     }
@@ -1294,5 +1301,4 @@
     </script>
 </body>
 </html>
-
 
